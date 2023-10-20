@@ -4,8 +4,8 @@ import src.com.until.DBUtil;
 
 import java.sql.*;
 
+//处理登录事件的类
 public class LoginDao {
-    //处理登录事件的类
 
     static Connection con = DBUtil.conn; //将DBUtil类中连接的conn传过来
 
@@ -31,8 +31,8 @@ public class LoginDao {
         }
     }
 
+//---------------------------------------------------------------------------------
 
-//-----------------------------------------------------
     //和前面那个函数类似，登录成功过后，检验账号权限
     public static int loginPow(String account, String password) { //提供两个参数，第一个账号，第二个密码，采用预处理的方法
         PreparedStatement preSql; //预处理语句

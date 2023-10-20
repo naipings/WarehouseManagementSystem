@@ -2,12 +2,14 @@ package src.com.windows;
 
 import src.com.dao.LoginDao;
 import src.com.style.Style;
+import src.com.tool.Tool;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+//登录界面
 public class Login {
     final int WIDTH = 500; //设置顶层框架的宽度
     final int HEIGHT = 250; //设置顶层框架的高度
@@ -32,21 +34,13 @@ public class Login {
         //设置标题
         jframe.setTitle(title);
 
-        //设置窗口的位置
-        // 设置当前窗口大小
-        Toolkit kit = Toolkit.getDefaultToolkit(); //获取对象(电脑屏幕)大小  //设置窗口位置
-        Dimension screenSize = kit.getScreenSize(); //把获取的数据放到screenSize里面
-        // 然后，从screenSize中，获取屏幕高度和宽度
-        int width = screenSize.width;
-        int height = screenSize.height;
-        // 设置窗口大小并居中
-        int x = (width-WIDTH)/2;
-        int y = (height-HEIGHT)/2;
-        jframe.setBounds(x, y, WIDTH, HEIGHT);
+        //设置当前窗口大小及位置居中
+        //因为有多个窗口需要使用这部分代码，故将其移入一个工具类里面
+        Tool.setWindowPosCenter(WIDTH, HEIGHT, jframe);
 
         //流布局
         flowLayout = new FlowLayout(flowLayout.CENTER); //flowLayout.LEFT表示左对齐；flowLayout.CENTER是居中对齐
-        jframe.setLayout(null);
+        jframe.setLayout(null); //先将窗口布局设置为空布局
         Style style = new Style();
         // 添加背景图片
         ImageIcon img = new ImageIcon("src/img/Login.png"); //将图片读取到img变量里面
@@ -56,7 +50,7 @@ public class Login {
         // 定义两个方框（用于装标题及账号密码）
         //  1.标题
         JPanel jpanel1 = new JPanel();
-        jpanel1.setLayout(flowLayout);
+        jpanel1.setLayout(flowLayout); //设置一个布局为流布局。流布局相当于一个窗口，它会自动为我们调整大小和位置，前提是依次向后排列
         jpanel1.setBounds(0, 0, 500, 45);
         //jpanel1.setBackground(Color.cyan); //调试用
         //   添加标题
@@ -67,7 +61,7 @@ public class Login {
 
         //  2.账号密码
         JPanel jpanel2 = new JPanel();
-        jpanel2.setLayout(flowLayout);
+        jpanel2.setLayout(flowLayout); //设置一个布局为流布局。流布局相当于一个窗口，它会自动为我们调整大小和位置，前提是依次向后排列
         jpanel2.setBounds(125, 45, 240, 230);
         //jpanel2.setBackground(Color.black); //调试用
         jpanel2.setOpaque(false); //设置透明（将方框设置为透明）
@@ -134,7 +128,6 @@ public class Login {
                         JOptionPane.showMessageDialog(null, "系统错误", "登录消息", JOptionPane.WARNING_MESSAGE);
                     }
 
-
                 } else {
                     //登陆失败，则用信息框进行提示
                     JOptionPane.showMessageDialog(null, "账号或者密码错误！", "登录消息", JOptionPane.WARNING_MESSAGE);
@@ -146,7 +139,7 @@ public class Login {
 
 
 
-        //jframe.setLayout(flowLayout); //设置一个布局为流布局。流布局相当于一个窗口，它会自动为我们调整大小和位置，前提是依次向后排列
+        //jframe.setLayout(flowLayout);
 
 
     }

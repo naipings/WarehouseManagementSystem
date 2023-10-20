@@ -2,6 +2,7 @@ package src.com.until;
 
 import java.sql.*;
 
+//数据库与驱动连接
 public class DBUtil {
 
     public static Connection conn = null;

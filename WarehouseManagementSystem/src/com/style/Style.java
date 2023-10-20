@@ -2,8 +2,9 @@ package src.com.style;
 
 import java.awt.Font;
 
+//存放样式
 public class Style {
-    //存放样式：
+
     //字体样式
     public static Font title; //定义一个标题（登陆界面的）
     public static Font account; //账号的样式
