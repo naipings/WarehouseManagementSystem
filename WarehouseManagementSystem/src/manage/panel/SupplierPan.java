@@ -83,6 +83,7 @@ public class SupplierPan extends JPanel {
         //在方框3中添加：
         JLabel jl3 = new JLabel("产品名称"); //标签
         JTextField jt2 = new JTextField(12); //文本框
+        jt2.setName("sun"); //给jt2取个名字，sun表示“孩子”的意思
 
         jpanel3.add(jl3);
         jpanel3.add(jt2);
@@ -97,6 +98,7 @@ public class SupplierPan extends JPanel {
                 if ( num < 5 ) {
                     JLabel jl3 = new JLabel("产品名称"); //标签
                     JTextField jt2 = new JTextField(12); //文本框
+                    jt2.setName("sun"); //表示“孩子”的意思
 
                     jpanel3.add(jl3);
                     jpanel3.add(jt2);
@@ -166,10 +168,76 @@ public class SupplierPan extends JPanel {
             }
         });
 
+        //获取方框3（"产品名称"）里面所有东西，
+        //把下拉框选择的数据给它 和方框3里面文本框里面的内容获取到，写入数据库。
+        //添加“保存数据”按钮的监听
+        jb4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int a = 0; //用于后面接收writeSupSun()返回的值，进而判断是否成功添加供应商的子产品
+                Component[] temp = jpanel3.getComponents(); //getComponents()会返回方框3里面的所有组件
+
+                for ( int i=0; i<temp.length; i++ ) {
+//                    System.out.println(temp[i].getName());
+                    if ( temp[i].getName()!=null && temp[i].getName().equals("sun") ) {
+                        //如果组件i的名字等于“sun”，表明这个组件是文本框
+                        JTextField TEMP1 = (JTextField)temp[i]; //由于文本框是TextField类型的对象，故我们使用类型转换
+                        String text = TEMP1.getText(); //把文本框的内容存过来
+//                        System.out.println(cmb1.getSelectedIndex());
+                        if ( cmb1.getSelectedIndex() == 0 ) {
+                            JOptionPane.showMessageDialog(null, "请选择供应商", "消息", JOptionPane.WARNING_MESSAGE);
+                        } else {
+                            //获取项目名字（供应商名字）
+//                            System.out.println(cmb1.getSelectedItem());
+                            String sup = (String)cmb1.getSelectedItem();
+
+                            //注：sup获取到供应商名字；text获取到子产品名字
+
+                            a = SupplierManageDao.writeSupSun(sup, text);
+                        }
+                    }
+                }
+
+                //后面高级版本进行改进，让它自动报错（自动报哪行有问题）
+                if ( a == 3 ) {
+                    JOptionPane.showMessageDialog(null, "请检查产品名称是否重复", "消息", JOptionPane.WARNING_MESSAGE);
+                }
+                else if ( a == 0 ) {
+                    JOptionPane.showMessageDialog(null, "添加失败！", "消息", JOptionPane.WARNING_MESSAGE);
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "添加产品成功！", "消息", JOptionPane.WARNING_MESSAGE);
+                }
+
+            }
+        });
+
+        //重置按钮功能：将下方菜单清空，只保留一个
+        //给”重置“按钮添加监听事件
+        jb5.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jpanel3.removeAll();
+
+                JLabel jl3 = new JLabel("产品名称"); //标签
+                JTextField jt2 = new JTextField(12); //文本框
+                jt2.setName("sun"); //表示“孩子”的意思
+
+                jpanel3.add(jl3);
+                jpanel3.add(jt2);
+
+                num = 1;
+
+                myUpdateUI();
+            }
+        });
+
 
         //“请选择供应商”下拉框，每次添加结束后，自动刷新
         //点击保存数据按钮，将数据写入数据库
         //点击重置按钮，将子产品方框（如果有多个）变成1个，并清空里面的内容
+
+
 
 
 
@@ -179,8 +247,6 @@ public class SupplierPan extends JPanel {
     //更新界面
     private void myUpdateUI() {
         SwingUtilities.updateComponentTreeUI(this); //添加或删除组件后，更新窗口
-
-
     }
 
 }

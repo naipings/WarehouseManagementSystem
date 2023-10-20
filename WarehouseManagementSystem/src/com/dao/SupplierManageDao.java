@@ -25,7 +25,7 @@ public class SupplierManageDao {
         int num; //定义一个结果集（存放结果）
         String sqlStr = "insert into supplier(`name`) values(?)"; //?表示从外部输入的
 
-        try{
+        try {
             preSql = con.prepareStatement(sqlStr);
             preSql.setString(1, name);
 
@@ -51,13 +51,13 @@ public class SupplierManageDao {
         ResultSet rs = null; //定义一个结果集（存放结果）
         String sqlStr = "select * from supplier";
 
-        try{
+        try {
             preSql = con.prepareStatement(sqlStr);
             rs = preSql.executeQuery();
 
-            while ( rs.next() ) {
+            while (rs.next()) {
                 //进入循环表明：下拉框里面还有数据
-                if ( star == 0 ) {
+                if (star == 0) {
                     star++;
                 }
 
@@ -80,9 +80,29 @@ public class SupplierManageDao {
         int num; //定义一个结果集（存放结果）
         String sqlStr = "delete from supplier where `name`=?"; //?表示从外部输入的
 
-        try{
+        try {
             preSql = con.prepareStatement(sqlStr);
             preSql.setString(1, name);
+
+            num = preSql.executeUpdate(); //更新数据，返回值放到num里面
+            return num;
+
+        } catch (SQLException e) {
+            return 3;
+        }
+    }
+
+    //将供应商和子产品都写入数据库（相当于同时写入父亲和孩子的数据）
+    public static int writeSupSun(String subName, String sunName) { //通过int返回值确定状态，0、3表示失败，1表示成功
+        //采用预处理的方式
+        PreparedStatement preSql; //预处理语句
+        int num; //定义一个结果集（存放结果）
+        String sqlStr = "insert into product (`name`, `supname`) VALUES(?, ?)"; //?表示从外部输入的
+
+        try {
+            preSql = con.prepareStatement(sqlStr);
+            preSql.setString(1, sunName); //即：第一个问号 用孩子的数据替代
+            preSql.setString(2, subName); //第二个问号的内容 用父亲的数据替代
 
             num = preSql.executeUpdate(); //更新数据，返回值放到num里面
             return num;
