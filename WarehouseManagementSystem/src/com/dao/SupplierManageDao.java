@@ -38,4 +38,58 @@ public class SupplierManageDao {
 
     }
 
+    //读取全部供应商
+    public static void readSup(JComboBox cmb1) {
+        //移除传递过来的所有项目
+        cmb1.removeAllItems(); //移除下拉框里面所有的东西
+        cmb1.addItem("--请选择供应商--");
+
+        int star = 0; //定义一个判断数据状态的变量。0表示没有数据 1表示有数据
+
+        //采用预处理的方式
+        PreparedStatement preSql; //预处理语句
+        ResultSet rs = null; //定义一个结果集（存放结果）
+        String sqlStr = "select * from supplier";
+
+        try{
+            preSql = con.prepareStatement(sqlStr);
+            rs = preSql.executeQuery();
+
+            while ( rs.next() ) {
+                //进入循环表明：下拉框里面还有数据
+                if ( star == 0 ) {
+                    star++;
+                }
+
+                String tempName = rs.getString("name"); //获取数据库相应字段的标签名
+                cmb1.addItem(tempName);
+            }
+
+            cmb1.repaint();
+
+        } catch (SQLException e) {
+
+        }
+
+    }
+
+    //删除供应商
+    public static int deleteSup(String name) { //返回0表示删除失败 1表示删除成功
+        //采用预处理的方式
+        PreparedStatement preSql; //预处理语句
+        int num; //定义一个结果集（存放结果）
+        String sqlStr = "delete from supplier where `name`=?"; //?表示从外部输入的
+
+        try{
+            preSql = con.prepareStatement(sqlStr);
+            preSql.setString(1, name);
+
+            num = preSql.executeUpdate(); //更新数据，返回值放到num里面
+            return num;
+
+        } catch (SQLException e) {
+            return 3;
+        }
+    }
+
 }

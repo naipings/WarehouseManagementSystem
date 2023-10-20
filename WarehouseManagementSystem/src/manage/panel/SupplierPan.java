@@ -15,6 +15,7 @@ public class SupplierPan extends JPanel {
 
     //为了方便后面调用这些变量，所以这么定义，而不是设置为局部变量
     public static JTextField jt1;
+    public JComboBox cmb1;
 
     //对"添加旗下子产品"按钮（jb3）添加监听事件时，计数器
     static int num = 1;
@@ -62,7 +63,7 @@ public class SupplierPan extends JPanel {
 
         //在方框2中添加：
         JLabel jl2 = new JLabel("供应商"); //标签
-        JComboBox cmb1 = new JComboBox<>(); //下拉菜单
+        cmb1 = new JComboBox<>(); //下拉菜单
         cmb1.addItem("--请选择供应商--");
         JButton jb3 = new JButton("添加旗下子产品"); //按钮
         JButton jb4 = new JButton("保存数据"); //按钮
@@ -125,6 +126,10 @@ public class SupplierPan extends JPanel {
                     }
                     else if ( star == 1 ) { //如果输入的值成功插入（表明成功更改数据了），此时返回值应为1
                         JOptionPane.showMessageDialog(null, "供应商添加成功", "消息", JOptionPane.WARNING_MESSAGE);
+
+                        //刷新下拉框（让“请选择供应商”下拉框，每次添加成功结束后，自动刷新）
+                        SupplierManageDao.readSup(cmb1);
+
                     }
                     else if ( star == 3 ) { //报错
                         JOptionPane.showMessageDialog(null, "供应商名字重复，请重新输入", "消息", JOptionPane.WARNING_MESSAGE);
@@ -132,6 +137,41 @@ public class SupplierPan extends JPanel {
                 }
             }
         });
+
+        //添加”删除供应商“按钮的监听
+        jb2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //将（添加的供应商的）数据写入到数据库中
+                //先判断文本框里面是否为空
+                if ( jt1.getText().equals("") ) {
+                    JOptionPane.showMessageDialog(null, "请输入要删除的供应商", "消息", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    //star用于接收writeSup()函数的返回值，进而判断是否成功添加供应商
+                    int star = SupplierManageDao.deleteSup(jt1.getText());
+                    if ( star == 0 ) {
+                        JOptionPane.showMessageDialog(null, "供应商删除失败，请检查名字", "消息", JOptionPane.WARNING_MESSAGE);
+                    }
+                    else if ( star == 1 ) { //如果输入的值成功插入（表明成功更改数据了），此时返回值应为1
+                        JOptionPane.showMessageDialog(null, "供应商删除成功", "消息", JOptionPane.WARNING_MESSAGE);
+
+                        //刷新下拉框（让“请选择供应商”下拉框，每次添加成功结束后，自动刷新）
+                        SupplierManageDao.readSup(cmb1);
+
+                    }
+                    else if ( star == 3 ) { //报错
+                        JOptionPane.showMessageDialog(null, "报错，请检查输入内容", "消息", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+            }
+        });
+
+
+        //“请选择供应商”下拉框，每次添加结束后，自动刷新
+        //点击保存数据按钮，将数据写入数据库
+        //点击重置按钮，将子产品方框（如果有多个）变成1个，并清空里面的内容
+
+
 
 
     }

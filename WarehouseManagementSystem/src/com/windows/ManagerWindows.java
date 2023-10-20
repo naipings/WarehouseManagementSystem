@@ -1,5 +1,6 @@
 package src.com.windows;
 
+import src.com.dao.SupplierManageDao;
 import src.com.tool.Tool;
 import src.manage.panel.InStockPan;
 import src.manage.panel.OutStockPan;
@@ -135,6 +136,8 @@ public class ManagerWindows {
                     if (jbl.getName().equals(buttonName[2])) {
                         //将商品出库那个方框移动到最上面
                         jpanel2.moveToFront(supplierpan);
+
+                        SupplierManageDao.readSup(supplierpan.cmb1); //用于显示 添加供应商界面的 “请选择供应商”下拉框的 已添加的公司
                     }
                 }
             });
