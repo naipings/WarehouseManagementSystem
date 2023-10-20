@@ -11,10 +11,16 @@ public class InStockPan extends JPanel {
     final int HEIGHT = 50; //设置顶层框架的高度
 
     //表格的数据
-    Object columns[] = {"供应商", "商品名字", "入库时间", "商品数量", "商品价格", "商品库存"}; //表格表头信息
+    Object columns[] = {"供应商", "商品名称", "入库时间", "商品数量", "商品价格", "商品库存"}; //表格表头信息
     JTable jtable = null; //定义一个表格
     JScrollPane jscrollpane; //滚动条
     public static DefaultTableModel model; //定义表格的控制权，可以用它来控制表格
+
+    //为了方便后面调用这些变量，所以这么定义，而不是设置为局部变量（包括：供应商，商品数量，商品价格）
+    public static JComboBox cmbSupName;
+    public static JComboBox cmbStockName;
+    public static JTextField stockNumIn;
+    public static JTextField stockPriceIn;
 
     public InStockPan(int x, int y, int width, int height) {//第一，二个参数表示起始位置；第三、四个参数表示方框的宽度与高度
         this.setBounds(x, y, width, height);
@@ -34,14 +40,14 @@ public class InStockPan extends JPanel {
         JPanel jpanel1 = new JPanel();
         JPanel jpanel2 = new JPanel();
         JPanel jpanel3 = new JPanel();
+        //设置方框1位置和大小
         jpanel1.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); //左对齐
-        //设置方框大小和位置
         jpanel1.setBounds(0, 0, WIDTH,50);
         jpanel1.setBackground(Color.red);
 
         this.add(jpanel1);
 
-        //定义5个按钮（管理员进行增删改查没有时间限制，普通员工只能在商品添加后，三分钟内进行删改操作）
+        //（在方框1中）定义5个按钮（管理员进行增删改查没有时间限制，普通员工只能在商品添加后，三分钟内进行删改操作）
         JButton jb1 = new JButton("保存入库");
         jpanel1.add(jb1);
         JButton jb2 = new JButton("更改商品");
@@ -61,33 +67,31 @@ public class InStockPan extends JPanel {
         // 添加4个标签
         JLabel jl1 = new JLabel("商品供应商");
         jpanel2.add(jl1);
-        JComboBox cmbSupName = new JComboBox<>(); //下拉菜单
+        cmbSupName = new JComboBox<>(); //下拉菜单
         cmbSupName.addItem("--请选择供应商--");
         jpanel2.add(cmbSupName);
 
         JLabel jl2 = new JLabel("商品名称");
         jpanel2.add(jl2);
-        JComboBox cmbStockName = new JComboBox<>(); //下拉菜单
+        cmbStockName = new JComboBox<>(); //下拉菜单
         cmbStockName.addItem("--请选择商品--");
         jpanel2.add(cmbStockName);
 
         JLabel jl3 = new JLabel("商品数量");
         jpanel2.add(jl3);
-        JTextField stockNum = new JTextField(8);
-        jpanel2.add(stockNum);
+        stockNumIn = new JTextField(8);
+        jpanel2.add(stockNumIn);
 
         JLabel jl4 = new JLabel("商品价格");
         jpanel2.add(jl4);
-        JTextField stockPrice= new JTextField(8);
-        jpanel2.add(stockPrice);
+        stockPriceIn = new JTextField(8);
+        jpanel2.add(stockPriceIn);
 
         this.add(jpanel2);
+
+        //实现1个表格
         table();
         this.add(jscrollpane); //把滚动条添加到方框里面
-        //实现1个表格
-
-
-
 
     }
 
@@ -116,8 +120,6 @@ public class InStockPan extends JPanel {
         jtable.setModel(model); //将jtable设置为表格的模式。上面都是规矩，这里是实现。
         jtable.getTableHeader().setReorderingAllowed(false); //让表格不可拖动
         jtable.getTableHeader().setResizingAllowed(false); //让表格不可拖动
-
-
 
         return jtable;
     }

@@ -138,10 +138,6 @@ public class Login {
         });
 
 
-
-        //jframe.setLayout(flowLayout);
-
-
     }
 
 }

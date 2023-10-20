@@ -3,6 +3,7 @@ package src.com.windows;
 import src.com.tool.Tool;
 import src.manage.panel.InStockPan;
 import src.manage.panel.OutStockPan;
+import src.manage.panel.SupplierPan;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,8 +13,8 @@ import java.awt.event.ActionListener;
 public class ManagerWindows {
 
     //动态的按钮监听事件用
-    String button[] = {"商品入库", "商品出库"}; //按钮显示名称
-    String buttonName[] = {"stockIn", "stockOut"}; //名字，用以区分不同按钮
+    String button[] = {"商品入库", "商品出库", "添加供应商"}; //按钮显示名称
+    String buttonName[] = {"stockIn", "stockOut", "supplier"}; //名字，用以区分不同按钮
 
     //下面这部分内容可以直接从Login.java里面复制过来，再稍作修改即可：
     final int WIDTH = 900; //设置顶层框架的宽度
@@ -84,6 +85,10 @@ public class ManagerWindows {
         OutStockPan outpan = new OutStockPan(0, 0, 665+50, HEIGHT-10); //这里的位置设置是以jpanel2为参照的，而不是以整个窗口
         jpanel2.add(outpan, (Integer) (JLayeredPane.PALETTE_LAYER));
 
+        //添加供应商窗格
+        SupplierPan supplierpan = new SupplierPan(0, 0, 665+50, HEIGHT-10);
+        jpanel2.add(supplierpan, (Integer) (JLayeredPane.PALETTE_LAYER));
+
         //加载方框
         jframe.add(jpanel1);
         jframe.add(jpanel2);
@@ -125,6 +130,11 @@ public class ManagerWindows {
                     if (jbl.getName().equals(buttonName[1])) {
                         //将商品出库那个方框移动到最上面
                         jpanel2.moveToFront(outpan);
+                    }
+
+                    if (jbl.getName().equals(buttonName[2])) {
+                        //将商品出库那个方框移动到最上面
+                        jpanel2.moveToFront(supplierpan);
                     }
                 }
             });
