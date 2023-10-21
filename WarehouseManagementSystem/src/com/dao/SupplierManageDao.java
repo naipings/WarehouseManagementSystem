@@ -12,9 +12,7 @@ import java.sql.SQLException;
 public class SupplierManageDao {
 
     //添加供应商
-
     //删除供应商
-
     //添加供应商旗下子产品
 
     static Connection con = DBUtil.conn;
@@ -60,17 +58,44 @@ public class SupplierManageDao {
                 if (star == 0) {
                     star++;
                 }
-
                 String tempName = rs.getString("name"); //获取数据库相应字段的标签名
                 cmb1.addItem(tempName);
             }
-
             cmb1.repaint();
-
         } catch (SQLException e) {
-
         }
+    }
 
+    //读取子产品（根据上面 读取全部供应商 的方法，做了相应微调）
+    public static void readSun(JComboBox cmb1, String supName) { //sup是子产品对应的供应商的名字
+        //移除传递过来的所有项目
+        cmb1.removeAllItems(); //移除下拉框里面所有的东西
+        cmb1.addItem("--请选择商品--");
+
+        int star = 0; //定义一个判断数据状态的变量。0表示没有数据 1表示有数据
+
+        //采用预处理的方式
+        PreparedStatement preSql; //预处理语句
+        ResultSet rs = null; //定义一个结果集（存放结果）
+        String sqlStr = "select * from product where supname=?";
+
+        try {
+            preSql = con.prepareStatement(sqlStr);
+            preSql.setString(1, supName);
+
+            rs = preSql.executeQuery();
+
+            while (rs.next()) {
+                //进入循环表明：下拉框里面还有数据
+                if (star == 0) {
+                    star++;
+                }
+                String tempName = rs.getString("name"); //获取数据库相应字段的标签名
+                cmb1.addItem(tempName);
+            }
+            cmb1.repaint();
+        } catch (SQLException e) {
+        }
     }
 
     //删除供应商

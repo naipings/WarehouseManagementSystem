@@ -186,6 +186,7 @@ public class SupplierPan extends JPanel {
 //                        System.out.println(cmb1.getSelectedIndex());
                         if ( cmb1.getSelectedIndex() == 0 ) {
                             JOptionPane.showMessageDialog(null, "请选择供应商", "消息", JOptionPane.WARNING_MESSAGE);
+                            break;
                         } else {
                             //获取项目名字（供应商名字）
 //                            System.out.println(cmb1.getSelectedItem());

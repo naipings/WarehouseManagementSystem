@@ -1,8 +1,10 @@
 package src.com.windows;
 
 import src.com.dao.LoginDao;
+import src.com.dao.SupplierManageDao;
 import src.com.style.Style;
 import src.com.tool.Tool;
+import src.manage.panel.InStockPan;
 
 import javax.swing.*;
 import java.awt.*;

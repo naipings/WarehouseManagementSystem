@@ -1,5 +1,6 @@
 package src.com.windows;
 
+import src.com.dao.InStockDao;
 import src.com.dao.SupplierManageDao;
 import src.com.tool.Tool;
 import src.manage.panel.InStockPan;
@@ -94,6 +95,7 @@ public class ManagerWindows {
         jframe.add(jpanel1);
         jframe.add(jpanel2);
 
+
         //实现点击不同按钮，切换不同窗格（最简朴的方法，后续会进行升级）
         //方法一：静态的（按钮多了比较麻烦）
 //        //对入库按钮添加监听事件
@@ -126,6 +128,8 @@ public class ManagerWindows {
                     if (jbl.getName().equals(buttonName[0])) {
                         //将商品入库那个方框移动到最上面
                         jpanel2.moveToFront(inpan);
+
+                        SupplierManageDao.readSup(InStockPan.cmbSupName); //用于显示 商品入库界面的 “请选择供应商”下拉框的 已添加的公司
                     }
 
                     if (jbl.getName().equals(buttonName[1])) {

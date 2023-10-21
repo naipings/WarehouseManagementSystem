@@ -1,8 +1,15 @@
 package src.manage.panel;
 
+import src.com.dao.InStockDao;
+import src.com.dao.SupplierManageDao;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 //入库窗格
 public class InStockPan extends JPanel {
@@ -16,7 +23,7 @@ public class InStockPan extends JPanel {
     JScrollPane jscrollpane; //滚动条
     public static DefaultTableModel model; //定义表格的控制权，可以用它来控制表格
 
-    //为了方便后面调用这些变量，所以这么定义，而不是设置为局部变量（包括：供应商，商品数量，商品价格）
+    //为了方便后面调用这些变量，所以这么定义，而不是设置为局部变量（包括：供应商，商品名称，商品数量，商品价格）
     public static JComboBox cmbSupName;
     public static JComboBox cmbStockName;
     public static JTextField stockNumIn;
@@ -92,6 +99,52 @@ public class InStockPan extends JPanel {
         //实现1个表格
         table();
         this.add(jscrollpane); //把滚动条添加到方框里面
+
+        //因为进入系统，默认是商品入库界面，在进入该界面时，就直接先读取 “请选择供应商”下拉框的 已添加的公司，
+        //进而避免需要再点击一下“商品入库”按钮，才能显示供应商内容
+        SupplierManageDao.readSup(InStockPan.cmbSupName); //用于显示 商品入库界面的 “请选择供应商”下拉框的 已添加的公司
+
+        //“保存入库”按钮添加监听事件
+        jb1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //将数据获取，写入到数据库中
+
+                if ( cmbSupName.getSelectedIndex() == 0 ) { //表示没有获取到
+                    JOptionPane.showMessageDialog(null, "请选择供应商", "消息", JOptionPane.WARNING_MESSAGE);
+                } else if ( cmbStockName.getSelectedIndex() == 0 ) {
+                    JOptionPane.showMessageDialog(null, "请选择产品", "消息", JOptionPane.WARNING_MESSAGE);
+                } else if ( stockNumIn.getText().equals("") ) {
+                    JOptionPane.showMessageDialog(null, "请输入产品入库数量", "消息", JOptionPane.WARNING_MESSAGE);
+                } else if ( stockPriceIn.getText().equals("") ) {
+                    JOptionPane.showMessageDialog(null, "请输入产品入库价格", "消息", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    String sup = (String) cmbSupName.getSelectedItem();
+                    String sun = (String) cmbStockName.getSelectedItem();
+                    String num = stockNumIn.getText();
+                    String pri = stockPriceIn.getText();
+                    int a = InStockDao.writeStock(sup, sun, num, pri);
+                    if ( a ==0 ) {
+                        JOptionPane.showMessageDialog(null, "添加失败！", "消息", JOptionPane.WARNING_MESSAGE);
+                    } else if ( a ==3 ) {
+                        JOptionPane.showMessageDialog(null, "请检查是否规范输入数量或价格", "消息", JOptionPane.WARNING_MESSAGE);
+                    } else if ( a == 1 ) {
+                        JOptionPane.showMessageDialog(null, "添加成功！", "消息", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+//
+
+            }
+        });
+
+        //“请选择供应商”下拉框的监听
+        cmbSupName.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                SupplierManageDao.readSun(InStockPan.cmbStockName, (String)cmbSupName.getSelectedItem()); //用于显示 商品入库界面的 “请选择商品”下拉框的 已添加的子产品
+            }
+        });
+
 
     }
 
