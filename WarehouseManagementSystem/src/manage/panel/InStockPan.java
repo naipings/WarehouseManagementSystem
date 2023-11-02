@@ -2,6 +2,7 @@ package src.manage.panel;
 
 import src.com.dao.InStockDao;
 import src.com.dao.SupplierManageDao;
+import src.com.tool.Tool;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -10,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.sql.ResultSet;
 
 //入库窗格
 public class InStockPan extends JPanel {
@@ -18,7 +20,7 @@ public class InStockPan extends JPanel {
     final int HEIGHT = 50; //设置顶层框架的高度
 
     //表格的数据
-    Object columns[] = {"供应商", "商品名称", "入库时间", "商品数量", "商品价格", "商品库存"}; //表格表头信息
+    Object columns[] = {"订单编号", "供应商", "商品名称", "入库时间", "商品数量", "商品价格", "商品库存"}; //表格表头信息
     JTable jtable = null; //定义一个表格
     JScrollPane jscrollpane; //滚动条
     public static DefaultTableModel model; //定义表格的控制权，可以用它来控制表格
@@ -68,7 +70,7 @@ public class InStockPan extends JPanel {
 
         //添加4个标签，2个文本框，2个下拉菜单
         // 先设置方框二的属性
-        jpanel2.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 35)); //左对齐
+        jpanel2.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 20)); //左对齐
         jpanel2.setBounds(0, 60, WIDTH, 100);
         jpanel2.setBackground(Color.green);
         // 添加4个标签
@@ -91,8 +93,13 @@ public class InStockPan extends JPanel {
 
         JLabel jl4 = new JLabel("商品价格");
         jpanel2.add(jl4);
-        stockPriceIn = new JTextField(8);
+        stockPriceIn = new JTextField(10);
         jpanel2.add(stockPriceIn);
+
+        JLabel jl5 = new JLabel("订单编号");
+        jpanel2.add(jl5);
+        JTextField stockID = new JTextField(10);
+        jpanel2.add(stockID);
 
         this.add(jpanel2);
 
@@ -132,7 +139,6 @@ public class InStockPan extends JPanel {
                         JOptionPane.showMessageDialog(null, "添加成功！", "消息", JOptionPane.WARNING_MESSAGE);
                     }
                 }
-//
 
             }
         });
@@ -145,6 +151,44 @@ public class InStockPan extends JPanel {
             }
         });
 
+        //”查找商品“按钮添加监听事件
+        //查询所有商品（）
+        jb3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //两种查询方法：查找全部，查找单个
+                String IDNum = stockID.getText();
+                ResultSet rs;
+                if ( IDNum.equals("") ) { //如果订单编号为空
+                    //则查找全部
+                    rs = InStockDao.findStockAllData();
+                    //然后更新表格窗格：传递一个存储数据的rs 和一个表格 还需要一个表格的宽度
+                    int a = Tool.addDataTable(rs, model, 7);
+                    if ( a == 0 ) {
+                        JOptionPane.showMessageDialog(null, "未查到相关数据", "消息", JOptionPane.WARNING_MESSAGE);
+                    }
+
+                }
+                else { //如果订单编号不为空
+                    //则查找单个
+                    rs = InStockDao.findStockOneData(IDNum);
+                    //然后更新表格窗格：传递一个存储数据的rs 和一个表格 还需要一个表格的宽度
+                    int a = Tool.addDataTable(rs, model, 7);
+                    if ( a == 0 ) {
+                        JOptionPane.showMessageDialog(null, "未查到相关数据", "消息", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+            }
+        });
+
+        //”删除商品“按钮添加监听事件
+        //鼠标选择哪个商品，就删除哪个商品
+        jb4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
 
     }
 

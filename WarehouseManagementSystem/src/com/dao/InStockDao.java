@@ -1,9 +1,11 @@
 package src.com.dao;
 
 import src.com.until.DBUtil;
+import src.manage.panel.InStockPan;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 //入库刀，用于入库界面的数据管理
@@ -34,6 +36,39 @@ public class InStockDao {
 
         } catch (SQLException e) {
             return 3;
+        }
+    }
+
+    //查找单个商品
+    public static ResultSet findStockOneData(String IDNum) {
+        //采用预处理的方式
+        PreparedStatement preSql; //预处理语句
+        String sqlStr = "select instock.ID,instock.supname,instock.stockname,instock.intime,instock.num,instock.price,product.stock from instock, product where product.supname=instock.supname and product.`name`=instock.stockname and id=?"; //?表示从外部输入的
+        ResultSet rs = null; //定义一个结果集（存放结果）
+        try {
+            preSql = con.prepareStatement(sqlStr);
+            preSql.setString(1, IDNum);
+            rs = preSql.executeQuery();
+            return rs;
+
+        } catch (SQLException e) {
+            return rs;
+        }
+    }
+
+    //查找所有商品
+    public static ResultSet findStockAllData() {
+        //采用预处理的方式
+        PreparedStatement preSql; //预处理语句
+        String sqlStr = "select instock.ID,instock.supname,instock.stockname,instock.intime,instock.num,instock.price,product.stock from instock, product where product.supname=instock.supname and product.`name`=instock.stockname";
+        ResultSet rs = null; //定义一个结果集（存放结果）
+        try {
+            preSql = con.prepareStatement(sqlStr);
+            rs = preSql.executeQuery();
+            return rs;
+
+        } catch (SQLException e) {
+            return rs;
         }
     }
 
