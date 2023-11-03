@@ -38,6 +38,7 @@ public class Tool {
                 }
                 model.addRow(data); //将data的数据添加到一行当中
             }
+            rs.close();
             return count;
         } catch (SQLException e) {
             e.printStackTrace();

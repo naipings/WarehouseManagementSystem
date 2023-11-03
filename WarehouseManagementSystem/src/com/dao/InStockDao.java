@@ -20,7 +20,7 @@ public class InStockDao {
         //采用预处理的方式
         PreparedStatement preSql; //预处理语句
 //        int num1 = Integer.parseInt(num); //将参数传入的字符串类型的num，转换成int类型
-        int num1 = 0; //定义一个结果集（存放结果）
+        int num1 = 0; //返回不同num1的值，表示不同状态
         String sqlStr = "insert into instock(supname, stockname, intime, num, price) values(?, ?, now(), ?, ?)"; //?表示从外部输入的
 
         try {
@@ -69,6 +69,46 @@ public class InStockDao {
 
         } catch (SQLException e) {
             return rs;
+        }
+    }
+
+    //根据ID删除商品
+    public static int deleteStockData(String IDNum) {
+        //采用预处理的方式
+        PreparedStatement preSql; //预处理语句
+        int num = 0; //返回不同num的值，表示不同状态
+        String sqlStr = "delete from instock where ID=?"; //?表示从外部输入的
+
+        try {
+            preSql = con.prepareStatement(sqlStr);
+            preSql.setString(1, IDNum);
+            num = preSql.executeUpdate(); //更新数据，返回值放到num里面
+            return num;
+
+        } catch (SQLException e) {
+            return 3;
+        }
+    }
+
+    //更改商品（将数据传入数据库）
+    public static int changeStockData(String supName, String sunName, String stockNum, String price, String IDNum) {
+        //采用预处理的方式
+        PreparedStatement preSql; //预处理语句
+        int num = 0; //返回不同num的值，表示不同状态
+        String sqlStr = "UPDATE instock set supname=?, stockname=?, num=?, price=? where id=?"; //?表示从外部输入的
+
+        try {
+            preSql = con.prepareStatement(sqlStr);
+            preSql.setString(1, supName);
+            preSql.setString(2, sunName);
+            preSql.setString(3, stockNum);
+            preSql.setString(4, price);
+            preSql.setString(5, IDNum);
+            num = preSql.executeUpdate(); //更新数据，返回值放到num里面
+            return num;
+
+        } catch (SQLException e) {
+            return 3;
         }
     }
 
