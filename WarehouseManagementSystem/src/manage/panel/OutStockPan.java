@@ -1,8 +1,19 @@
 package src.manage.panel;
 
+import src.com.dao.InStockDao;
+import src.com.dao.OutStockDao;
+import src.com.dao.SupplierManageDao;
+import src.com.tool.Tool;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 //出库窗格（和入库框架一模一样，但是细节做修改）
 public class OutStockPan extends JPanel {
@@ -11,7 +22,7 @@ public class OutStockPan extends JPanel {
     final int HEIGHT = 50; //设置顶层框架的高度
 
     //表格的数据
-    Object columns[] = {"供应商", "商品名称", "出库时间", "商品数量", "商品价格", "商品库存", "客户"}; //表格表头信息
+    Object columns[] = {"订单编号", "供应商", "商品名称", "出库时间", "商品数量", "商品价格", "商品库存", "客户"}; //表格表头信息
     JTable jtable = null; //定义一个表格
     JScrollPane jscrollpane; //滚动条
     public static DefaultTableModel model; //定义表格的控制权，可以用它来控制表格
@@ -93,11 +104,157 @@ public class OutStockPan extends JPanel {
         stockUser = new JTextField(8);
         jpanel2.add(stockUser);
 
+        JLabel jl6 = new JLabel("订单编号");
+        jpanel2.add(jl6);
+        JTextField stockID = new JTextField(8);
+        jpanel2.add(stockID);
+
         this.add(jpanel2);
 
         //实现1个表格
         table();
         this.add(jscrollpane); //把滚动条添加到方框里面
+
+
+        //“保存出库”按钮添加监听事件
+        jb1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //将数据获取，写入到数据库中
+
+                if ( cmbSupName.getSelectedIndex() == 0 ) { //表示没有获取到
+                    JOptionPane.showMessageDialog(null, "请选择供应商", "消息", JOptionPane.WARNING_MESSAGE);
+                } else if ( cmbStockName.getSelectedIndex() == 0 ) {
+                    JOptionPane.showMessageDialog(null, "请选择产品", "消息", JOptionPane.WARNING_MESSAGE);
+                } else if ( stockNumOut.getText().equals("") ) {
+                    JOptionPane.showMessageDialog(null, "请输入产品出库数量", "消息", JOptionPane.WARNING_MESSAGE);
+                } else if ( stockPriceOut.getText().equals("") ) {
+                    JOptionPane.showMessageDialog(null, "请输入产品出库价格", "消息", JOptionPane.WARNING_MESSAGE);
+                } else if ( stockUser.getText().equals("") ) {
+                    JOptionPane.showMessageDialog(null, "请输入客户名", "消息", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    String sup = (String) cmbSupName.getSelectedItem();
+                    String sun = (String) cmbStockName.getSelectedItem();
+                    String num = stockNumOut.getText();
+                    String pri = stockPriceOut.getText();
+                    String userName = stockUser.getText();
+                    int a = OutStockDao.writeStock(sup, sun, num, pri, userName);
+                    if ( a ==0 ) {
+                        JOptionPane.showMessageDialog(null, "出库失败！", "消息", JOptionPane.WARNING_MESSAGE);
+                    } else if ( a ==3 ) {
+                        JOptionPane.showMessageDialog(null, "请检查是否规范输入数量或价格", "消息", JOptionPane.WARNING_MESSAGE);
+                    } else if ( a == 1 ) {
+                        JOptionPane.showMessageDialog(null, "出库成功！", "消息", JOptionPane.WARNING_MESSAGE);
+                    } else if ( a == 4 ) {
+                        JOptionPane.showMessageDialog(null, "库存不足，无法进行出库", "消息", JOptionPane.WARNING_MESSAGE);
+
+                    }
+                }
+
+            }
+        });
+
+        //“请选择供应商”下拉框的监听
+        cmbSupName.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                SupplierManageDao.readSun(cmbStockName, (String)cmbSupName.getSelectedItem()); //用于显示 商品入库界面的 “请选择商品”下拉框的 已添加的子产品
+            }
+        });
+
+        //”查找商品“按钮添加监听事件
+        jb3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //两种查询方法：查找全部，查找单个
+                String IDNum = stockID.getText();
+                ResultSet rs;
+                if ( IDNum.equals("") ) { //如果订单编号为空
+                    //则查找全部
+                    rs = OutStockDao.findStockAllData();
+                    //然后更新表格窗格：传递一个存储数据的rs 和一个表格 还需要一个表格的宽度
+                    int a = Tool.addDataTable(rs, model, 8);
+                    if ( a == 0 ) {
+                        JOptionPane.showMessageDialog(null, "未查到相关数据", "消息", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+                else { //如果订单编号不为空
+                    //则查找单个
+                    rs = OutStockDao.findStockOneData(IDNum);
+                    updateTextBox(IDNum); //文本框加载相关数据
+                    //然后更新表格窗格：传递一个存储数据的rs 和一个表格 还需要一个表格的宽度
+                    int a = Tool.addDataTable(rs, model, 8);
+                    if ( a == 0 ) {
+                        JOptionPane.showMessageDialog(null, "未查到相关数据", "消息", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+            }
+        });
+
+        //”删除商品“按钮添加监听事件
+        //鼠标选择哪个商品，就删除哪个商品
+        jb4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //直接输入ID进行删除
+                String IDNum = stockID.getText();
+                if ( IDNum.equals("") ) {
+                    JOptionPane.showMessageDialog(null, "请输入删除编号", "消息", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    int a = OutStockDao.deleteStockData(IDNum);
+                    if ( a == 0 ) {
+                        JOptionPane.showMessageDialog(null, "请检查输入编号是否存在", "消息", JOptionPane.WARNING_MESSAGE);
+                    }
+                    if ( a == 1 ) {
+                        JOptionPane.showMessageDialog(null, "删除成功", "消息", JOptionPane.WARNING_MESSAGE);
+                    }
+                    if ( a == 3 ) {
+                        JOptionPane.showMessageDialog(null, "请检查输入编号是否为数字", "消息", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
+
+            }
+        });
+
+        //”更改商品“按钮添加监听事件
+        jb2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String supName=null, sunName=null, stockNum=null, price=null, user=null, IDNum=null; //供应商名称，商品名称，商品数量，商品价格，购买客户
+                if ( stockID.getText().equals("") ) {
+                    JOptionPane.showMessageDialog(null, "订单编号不能为空！", "消息", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    if ( cmbSupName.getSelectedIndex() == 0 ) {
+                        JOptionPane.showMessageDialog(null, "请选择供应商", "消息", JOptionPane.WARNING_MESSAGE);
+                    } else if ( cmbStockName.getSelectedIndex() == 0 ) {
+                        JOptionPane.showMessageDialog(null, "请选择商品", "消息", JOptionPane.WARNING_MESSAGE);
+                    } else if ( stockNumOut.getText().equals("") ) {
+                        JOptionPane.showMessageDialog(null, "商品数量不能为空", "消息", JOptionPane.WARNING_MESSAGE);
+                    } else if ( stockPriceOut.getText().equals("") ) {
+                        JOptionPane.showMessageDialog(null, "商品价格不能为空", "消息", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        //写入（进行更改）
+                        supName = (String)cmbSupName.getSelectedItem();
+                        sunName = (String)cmbStockName.getSelectedItem();
+                        stockNum = stockNumOut.getText();
+                        price = stockPriceOut.getText();
+                        user = stockUser.getText();
+                        //将五个值传入数据库
+                        IDNum = stockID.getText();
+                        int a = OutStockDao.changeStockData(supName, sunName, stockNum, price, user, IDNum);
+                        if ( a == 0 ) {
+                            JOptionPane.showMessageDialog(null, "数据未变动", "消息", JOptionPane.WARNING_MESSAGE);
+                        } else if ( a == 1 ) {
+                            JOptionPane.showMessageDialog(null, "更改成功", "消息", JOptionPane.WARNING_MESSAGE);
+                        } else if ( a == 3 ) {
+                            JOptionPane.showMessageDialog(null, "请检查输入格式", "消息", JOptionPane.WARNING_MESSAGE);
+                        }
+
+                    }
+                }
+
+            }
+        });
 
     }
 
@@ -130,6 +287,49 @@ public class OutStockPan extends JPanel {
 
 
         return jtable;
+    }
+
+    //查找单个商品时，在文本框上显示相关数据
+    private void updateTextBox(String IDNum) {
+        ResultSet rs1 = OutStockDao.findStockOneData(IDNum);
+        try {
+            if ( rs1.next() ) {
+                String sup = rs1.getString("supname");
+                String sun = rs1.getString("stockname");
+                String number = rs1.getString("num");
+                String pri = rs1.getString("price");
+                String user = rs1.getString("user");
+
+                //遍历两个下拉框，便于在下拉框中显示：对应的供应商名称，商品名称
+                for ( int i=0; i<cmbSupName.getItemCount(); i++ ) {
+                    String a = (String)cmbSupName.getItemAt(i);
+                    if ( a.equals(sup) ) {
+                        cmbSupName.setSelectedIndex(i);
+                        cmbSupName.repaint();
+                    }
+                }
+                for ( int i=0; i<cmbStockName.getItemCount(); i++ ) {
+                    String a = (String)cmbStockName.getItemAt(i);
+                    if ( a.equals(sun) ) {
+                        cmbStockName.setSelectedIndex(i);
+                        cmbStockName.repaint();
+                    }
+                }
+                //在文本框中显示：商品数量，价格，购买客户
+                stockNumOut.setText(number);
+                stockPriceOut.setText(pri);
+                stockUser.setText(user);
+                //更新窗格
+                myUpdateUI();
+            }
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        }
+    }
+
+    //更新界面
+    private void myUpdateUI() {
+        SwingUtilities.updateComponentTreeUI(this); //添加或删除组件后，更新窗口
     }
 
 }

@@ -135,6 +135,8 @@ public class ManagerWindows {
                     if (jbl.getName().equals(buttonName[1])) {
                         //将商品出库那个方框移动到最上面
                         jpanel2.moveToFront(outpan);
+
+                        SupplierManageDao.readSup(OutStockPan.cmbSupName); //用于显示 商品入库界面的 “请选择供应商”下拉框的 已添加的公司
                     }
 
                     if (jbl.getName().equals(buttonName[2])) {

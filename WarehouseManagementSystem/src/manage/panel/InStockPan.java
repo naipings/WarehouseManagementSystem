@@ -148,12 +148,11 @@ public class InStockPan extends JPanel {
         cmbSupName.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                SupplierManageDao.readSun(InStockPan.cmbStockName, (String)cmbSupName.getSelectedItem()); //用于显示 商品入库界面的 “请选择商品”下拉框的 已添加的子产品
+                SupplierManageDao.readSun(cmbStockName, (String)cmbSupName.getSelectedItem()); //用于显示 商品入库界面的 “请选择商品”下拉框的 已添加的子产品
             }
         });
 
         //”查找商品“按钮添加监听事件
-        //查询所有商品（）
         jb3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -201,6 +200,9 @@ public class InStockPan extends JPanel {
                     }
                     if ( a == 3 ) {
                         JOptionPane.showMessageDialog(null, "请检查输入编号是否为数字", "消息", JOptionPane.WARNING_MESSAGE);
+                    }
+                    if ( a == 4 ) {
+                        JOptionPane.showMessageDialog(null, "商品库存不足，不能删除当前订单", "消息", JOptionPane.WARNING_MESSAGE);
                     }
                 }
 

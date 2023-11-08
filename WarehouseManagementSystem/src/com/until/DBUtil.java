@@ -44,7 +44,7 @@ public class DBUtil {
                 stm.close();
             } catch (SQLException e) {
                 e.printStackTrace();
-;            }
+            }
         }
     }
 
